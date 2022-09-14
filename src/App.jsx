@@ -1,7 +1,7 @@
 import "./style.css";
 import { useState } from "react";
 import { useEffect } from "react";
-import { getUserData, getKataList } from "./services/service.data";
+import { getUserData, getKataList, getAllCompletedKataByUser } from "./services/service.data";
 import UserInputForm from "./components/UserInputForm";
 import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";

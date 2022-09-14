@@ -36,3 +36,47 @@ export async function getKataList(username, page=0){
 //     }
 //     return null;
 // }
+
+async function getAllCompletedKataByUser(user) {
+    //CodeWars' API returns 200 completed challenges per API request, offset by the page count. (200/page)
+    const numPerPage = 200;
+    const totalCompleted = user.codeChallenges.totalCompleted;
+    let listOfKatas = [];
+
+    //If the user has completed ANY challenges
+    if (totalCompleted > 0){
+        //Continue fetching each page necessary to find all the user's completed challenges
+        for (let page = 0; page < Math.floor(totalCompleted/numPerPage); page++){
+            let tempData = await getKataList(user.username, page);
+            if (tempData) listOfKatas = listOfKatas.concat(tempData.data);
+        }
+    }else{
+        //Return a falsy value that signifies that the user has no completed challenges
+        return -1;
+    }
+
+    //Now we should have a list of all the completed katas inside of ``listOfKatas``;
+
+    let kataPromises = [];
+    //Build a list of promises for all the fetch requests
+    for (const kata of listOfKatas) {
+      kataPromises.push(
+        fetch(`https://www.codewars.com/api/v1/code-challenges/${kata.id}`)
+      );
+    }
+    //Wait for all of those promises to finish (fulfilled or not)
+    let results = await Promise.allSettled(kataPromises);
+    const kataFulfilled = [];
+    //Build a list of the fulfilled promises and turn them to json
+    for (const result of results) {
+      if (result?.status === "fulfilled") {
+        kataFulfilled.push(result.value.json());
+      } else {
+        console.log("Rejected kata request", result);
+        //do something with the rejected fetch requests
+      }
+    }
+    //Wait for all the promsises to have been turned to json
+    let data = await Promise.allSettled(kataFulfilled);
+    return data;
+  }

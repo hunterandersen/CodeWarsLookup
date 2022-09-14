@@ -1,14 +1,13 @@
 import "./style.css";
 import { useState } from "react";
-import { useEffect } from "react";
-import { getUserData, getKataList, getAllCompletedKataByUser } from "./services/service.data";
+import { getUserData, getAllCompletedKataByUser } from "./services/service.data";
 import UserInputForm from "./components/UserInputForm";
 import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";
+import { useMemo } from "react";
 
 function App() {
   const [userData, setUserData] = useState(null);
-  const [userKataData, setUserKataData] = useState();
   const [displayCount, setDisplayCount] = useState(20);
   const [feedback, setFeedback] = useState("Feedback");
 
@@ -23,22 +22,33 @@ function App() {
     }
   }
 
-  async function handleKataData(username){
-    const res = await getKataList(username);
-    if (res){
-      setUserKataData(res);
-    }
-  }
-
   function handleDisplayCount(number){
     setDisplayCount(number);
   }
 
-  useEffect(() => {
-    if (userData?.username){
-      handleKataData(userData.username);
-    }
-  }, [userData]);
+  //The function for useMemo to call
+  async function getUserKataData(username){
+    let data = await getAllCompletedKataByUser(username);
+    console.log("All Completed Kata Data", data);
+    return data;
+  }
+
+  //Turn this into useMemo
+  //const [userKataData, setUserKataData] = useState();
+  const memoizedKataData = useMemo(() => getUserKataData(userData.username), [userData]);
+
+  // async function handleKataData(username){
+  //   const res = await getKataList(username);
+  //   if (res){
+  //     setUserKataData(res);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (userData?.username){
+  //     handleKataData(userData.username);
+  //   }
+  // }, [userData]);
 
   return (
     <div className="flex f-column f-align-center">
@@ -48,7 +58,7 @@ function App() {
       {/* User's "dashboard" data */}
       <UserDataDashboard user={userData}  />
       {/* Listed Data */}
-      {userKataData? <KatasList displayCount={displayCount} kataData={userKataData}/> : <></>}
+      {memoizedKataData && <KatasList displayCount={displayCount} kataData={memoizedKataData}/>}
     </div>
   );
 }

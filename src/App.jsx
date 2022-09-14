@@ -27,15 +27,18 @@ function App() {
   }
 
   //The function for useMemo to call
-  async function getUserKataData(username){
-    let data = await getAllCompletedKataByUser(username);
-    console.log("All Completed Kata Data", data);
-    return data;
+  async function getUserKataData(user){
+    if (user){
+      let data = await getAllCompletedKataByUser(user);
+      console.log("All Completed MEMOIZED Kata Data", data);
+      return data;
+    }
+    return null;
   }
 
   //Turn this into useMemo
   //const [userKataData, setUserKataData] = useState();
-  const memoizedKataData = useMemo(() => getUserKataData(userData.username), [userData]);
+  const memoizedKataData = useMemo(() => getUserKataData(userData), [userData]);
 
   // async function handleKataData(username){
   //   const res = await getKataList(username);
@@ -58,7 +61,7 @@ function App() {
       {/* User's "dashboard" data */}
       <UserDataDashboard user={userData}  />
       {/* Listed Data */}
-      {memoizedKataData && <KatasList displayCount={displayCount} kataData={memoizedKataData}/>}
+      {false && <KatasList displayCount={displayCount} kataData={memoizedKataData}/>}
     </div>
   );
 }

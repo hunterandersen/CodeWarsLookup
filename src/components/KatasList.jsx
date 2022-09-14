@@ -6,18 +6,20 @@ export default function KatasList({ kataData, displayCount }) {
 
   async function getKataInfo(searchArr) {
     let kataPromises = [];
-    for (const kata of searchArr){
-        kataPromises.push(fetch(`https://www.codewars.com/api/v1/code-challenges/${kata.id}`));
+    for (const kata of searchArr) {
+      kataPromises.push(
+        fetch(`https://www.codewars.com/api/v1/code-challenges/${kata.id}`)
+      );
     }
     let results = await Promise.allSettled(kataPromises);
     const kataFulfilled = [];
-    for (const result of results){
-        if (result?.status === "fulfilled"){
-            kataFulfilled.push(result.value.json());
-        }else{
-            console.log(result);
-            //do something with the rejected fetch requests
-        }
+    for (const result of results) {
+      if (result?.status === "fulfilled") {
+        kataFulfilled.push(result.value.json());
+      } else {
+        console.log(result);
+        //do something with the rejected fetch requests
+      }
     }
     let data = await Promise.allSettled(kataFulfilled);
     setKataInfo(data);
@@ -29,18 +31,31 @@ export default function KatasList({ kataData, displayCount }) {
 
   return (
     <div className="container">
-      <h1 className="m-auto" style={{"text-align":"center"}}>Previous Katas</h1>
+      <h1 className="m-auto" style={{ textAlign: "center" }}>
+        Previous Katas
+      </h1>
       {kataData?.data && (
         <div className="list-control flex f-column">
-          <h2>Total Katas: {kataData.totalItems}</h2>
-          <ol>
+          <div className="flex f-space-between">
+            <h2>Total Katas: {kataData.totalItems}</h2>
+            <div>
+              <button className="button fit-content">&#9650;</button>
+              <button className="button fit-content">&#9660;</button>
+            </div>
+          </div>
+          <ol id="katasList flex f-column">
             {kataData.data.slice(0, displayCount).map((kata, ind) => {
-                if (kataInfo?.length > 0 && kata.id == kataInfo[ind].value.id){
-                    return (<li key={kata.id} className={`flex f-space-between color-${kataInfo[ind].value.rank.color}`}>
-                        <p>{kata.name}</p>
-                        <p>{kataInfo[ind].value.rank.name}</p>
-                    </li>);
-                }
+              if (kataInfo?.length > ind && kata.id == kataInfo[ind].value.id) {
+                return (
+                  <div
+                    key={kata.id}
+                    className={`flex f-space-between -${kataInfo[ind].value.rank.color}`}
+                  >
+                    <li>{kata.name}</li>
+                    <p>{kataInfo[ind].value.rank.name}</p>
+                  </div>
+                );
+              }
               return <li key={kata.id}>{kata.name}</li>;
             })}
           </ol>

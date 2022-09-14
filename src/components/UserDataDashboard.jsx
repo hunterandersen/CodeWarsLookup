@@ -8,7 +8,6 @@ export default function UserDataDashboard({ user }) {
         <h1>{user.username}</h1>
         <p>Honor: {user.honor}</p>
         <p>Rank: {user.ranks.overall.name}</p>
-        {/* <p>Completed Challenges Count: {user.codeChallenges.totalCompleted}</p> */}
       </div>
     );
   }

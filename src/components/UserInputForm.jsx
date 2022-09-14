@@ -1,12 +1,26 @@
 import React from "react";
 import { useState } from "react";
 
-export default function UserInputForm({ handleSubmit, feedback }) {
+export default function UserInputForm({
+  handleSubmit,
+  updateDisplayCount,
+  feedback,
+}) {
   const [inputText, setInputText] = useState("");
+  const [displayCount, setDisplayCount] = useState(20);
 
   function handleChange(event) {
-    console.log(event.target.value);
-    setInputText(() => event.target.value);
+    switch (event.target.name) {
+      case "userNameInput":
+        setInputText(() => event.target.value);
+        break;
+      case "displayCountInput":
+        event.preventDefault();
+        setDisplayCount(() => event.target.value);
+        break;
+      default:
+        console.log("No action for ", event.target.name);
+    }
   }
 
   return (
@@ -19,15 +33,32 @@ export default function UserInputForm({ handleSubmit, feedback }) {
         }}
         className="flex"
       >
-        <label htmlFor="userInput">Input username:</label>
+        <label htmlFor="userNameInput">Input username:</label>
         <input
           onChange={handleChange}
           type="text"
-          name="userInput"
-          id="useInput"
+          name="userNameInput"
+          id="userNameInput"
           value={inputText}
         />
         <button className="button">Search User</button>
+      </form>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        updateDisplayCount(displayCount);
+      }} className="flex">
+        <label htmlFor="displayCountInput">Number of Katas to Display:</label>
+        <input
+          onChange={handleChange}
+          type="number"
+          step={5}
+          min={10}
+          max={50}
+          value={displayCount}
+          name="displayCountInput"
+          id="displayCountInput"
+        />
+        <button className="button">Update List Length</button>
       </form>
     </div>
   );

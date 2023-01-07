@@ -27,7 +27,7 @@ export async function getKataList(username, page=0){
 export async function getAllCompletedKataByUser(username, totalCompleted) {
     if (!username || !totalCompleted){ 
       console.log("Invalid username or totalCompleted", username, totalCompleted);
-      return null
+      return null;
     };
 
     //CodeWars' API returns 200 completed challenges per API request, offset by the page count. (200/page)
@@ -38,11 +38,13 @@ export async function getAllCompletedKataByUser(username, totalCompleted) {
     if (totalCompleted > 0){
         //Continue fetching each page necessary to find all the user's completed challenges
         for (let page = 0; page <= Math.floor(totalCompleted/numPerPage); page++){
+            //Store all of the promises in an array
             kataPages.push(getKataList(username, page));
             // let tempData = await getKataList(user, page);
         }
     }else{
         //Return a falsy value that signifies that the user has no completed challenges
+        console.log("That user has not completed any challenges");
         return -1;
     }
     const listOfKatasPromises = await Promise.allSettled(kataPages);
@@ -50,7 +52,8 @@ export async function getAllCompletedKataByUser(username, totalCompleted) {
     const listOfKatas = listOfKatasPromises[0].value.data;
     if (!listOfKatas) return null;
 
-    //Now we should have a list of all the completed katas inside of ``listOfKatas``;
+    //Now we should have a list of all the completed katas inside of ``listOfKatas``
+    //and can now use that list to get the information about each specific kata
 
     let kataPromises = [];
     //Build a list of promises for all the fetch requests
@@ -74,6 +77,7 @@ export async function getAllCompletedKataByUser(username, totalCompleted) {
     
     //Wait for all the promsises to have been turned to json
     let data = await Promise.allSettled(kataFulfilled);
-    //Now that the information has been parsed to json, we want to extract and return the value properties, which hold all the actual kata info that we want
+    //Now that the information has been parsed to json, we want to extract and return the value properties, 
+    //which hold all the actual kata info that we want
     return data.map((item) => item.value);
   }

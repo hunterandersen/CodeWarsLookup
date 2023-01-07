@@ -28,6 +28,10 @@ input {
   justify-content: space-between;
   flex-wrap: wrap; */
 }
+#ListFilterForm{
+  width: 100%;
+  
+}
 
 .container {
   width: 100%;

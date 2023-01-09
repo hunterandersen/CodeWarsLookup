@@ -11,11 +11,10 @@ export async function getUserData(username){
     return null;
 }
 
-export async function getKataList(username, page=0){
+export async function getKataList(username, page = 0){
     try{
         let res = await fetch(`https://www.codewars.com/api/v1/users/${username}/code-challenges/completed?page=${page}`);
         let data = await res.json();
-        //console.log("Fetch Results:", data);
         return data;
     }catch(error){
         console.log("getKataList:Fetching error");
@@ -40,7 +39,6 @@ export async function getAllCompletedKataByUser(username, totalCompleted) {
         for (let page = 0; page <= Math.floor(totalCompleted/numPerPage); page++){
             //Store all of the promises in an array
             kataPages.push(getKataList(username, page));
-            // let tempData = await getKataList(user, page);
         }
     }else{
         //Return a falsy value that signifies that the user has no completed challenges
@@ -49,9 +47,12 @@ export async function getAllCompletedKataByUser(username, totalCompleted) {
     }
     const listOfKatasPromises = await Promise.allSettled(kataPages);
     //Now I want to extract the data from the fulfilled promises
-    const listOfKatas = listOfKatasPromises[0].value.data;
+    //listOfKatasPromises[0].value.data;
+    let listOfKatas = [];
+    for (const arr of listOfKatasPromises){
+      listOfKatas = listOfKatas.concat(arr.value.data);
+    }
     if (!listOfKatas) return null;
-
     //Now we should have a list of all the completed katas inside of ``listOfKatas``
     //and can now use that list to get the information about each specific kata
 

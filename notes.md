@@ -1,6 +1,8 @@
 # General Overview
 
 The fetching works. I can get all the previous katas for a given user
-I just need to work on displaying it to the screen correctly.
-Work in App.jsx first. It's rendering logic is not quite there.
-It's trying to use/apply filtering, but something's off.
+Using the "Apply Filters" button isn't triggering a re-render like I'd like it to.
+It needs to in order to change what data is being sent to the KataList component.
+
+Similarly, the Up/Down arrows are re-rendering too much!
+They should simply cycle the data that's already available in the component.

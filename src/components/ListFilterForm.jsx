@@ -12,6 +12,7 @@ export default function ListFilterForm({ submitChanges }) {
     //kyuLevelChecked[checkBoxNumber-1] = e.target.value;
     setKyuLevelChecked((prev) => {
       prev[checkBoxNumber - 1] = e.target.checked;
+      console.log("updating checklist filter", prev);
       return [...prev];
     });
   }
@@ -42,7 +43,7 @@ export default function ListFilterForm({ submitChanges }) {
           })}
           {JSON.stringify(kyuLevelChecked)}
         </fieldset>
-        <button type="submit">Apply Filters</button>
+        <button type="submit" className="button">Apply Filters</button>
       </form>
     </div>
   );

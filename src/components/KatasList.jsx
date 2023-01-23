@@ -17,11 +17,11 @@ export default function KatasList({ kataData, userData, filterOptions, displayCo
       return null;
     })
     .filter((ele) => {
-      console.log(ele);
       return ele;
     }); //the filter is to get rid of the null values after mapping
 
-    let displayData = kataData[userData.username];
+    let displayData = kataData.slice(0);
+    console.log(displayData);
     if (kyuLevelsArr.length > 0){
       //Filter the data based on kyu level
       displayData = displayData.filter((kata) => {

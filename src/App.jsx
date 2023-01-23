@@ -9,14 +9,13 @@ import UserInputForm from "./components/UserInputForm";
 import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";
 import ListFilterForm from "./components/ListFilterForm";
-import { useCallback } from "react";
 import { useQuery } from "react-query";
 
 function App() {
   const [userSearchName, setUserSearchName] = useState("");
-  const [userData, setUserData] = useState(null);
+  //const [userData, setUserData] = useState(null);
   //kataData should be an object with each looked-up username as a property with the fetched data as the value
-  const [kataData, setKataData] = useState({});
+  //const [kataData, setKataData] = useState({});
   //Filter Options
   const [displayCount, setDisplayCount] = useState(20);
   const [filterOptions, setFilterOptions] = useState({
@@ -27,10 +26,12 @@ function App() {
   const [feedback, setFeedback] = useState("Feedback");
 
   //React Query
-  const queriedUserData = useQuery(["userDataFetch", userSearchName], 
-    ()=> getUserData(userSearchName), {enabled: !!userSearchName });
-  const queriedKataData = useQuery(["kataDataFetch", userSearchName, queriedUserData.codeChallenges.totalCompleted], 
-    ()=> updateKataData(queriedUserData.username, queriedUserData.codeChallenges.totalCompleted), {enabled: !!queriedUserData.username})
+  const queriedUserData = useQuery(["userDataFetch", userSearchName],
+    () => getUserData(userSearchName), { enabled: !!userSearchName });
+
+  console.log(!!queriedUserData?.data?.username);
+  const queriedKataData = useQuery(["kataDataFetch", userSearchName],
+    () => updateKataData(queriedUserData.data.username, queriedUserData.data.codeChallenges.totalCompleted), { enabled: !!queriedUserData?.data?.username })
 
   //I think this should be useCallback();
   async function handleInputUserSubmit(event, userName) {
@@ -67,8 +68,9 @@ function App() {
   async function updateKataData(username, totalCompleted) {
     let data = await getAllCompletedKataByUser(username, totalCompleted);
     //let data = await getKataTest(user);
+    return data;
     console.log("All Completed MEMOIZED Kata Data", data);
-    if (data) {
+    /* if (data) {
       setKataData((prevKataData) => {
         //Update the object with the new property
         const newObj = { ...prevKataData };
@@ -76,7 +78,7 @@ function App() {
         console.log("Updating kataData state: ", newObj);
         return newObj;
       });
-    }
+    } */
   }
 
   /* useEffect(() => {
@@ -101,17 +103,17 @@ function App() {
         feedback={feedback}
       />
       {/* User's "dashboard" data */}
-      <UserDataDashboard user={userData} />
+      {queriedUserData.isSuccess && <UserDataDashboard user={queriedUserData.data} />}
       <ListFilterForm submitChanges={handleFilterOptionsSubmit} />
       {/* Completed Katas List */}
-      {queriedUserData.isIdle && <div>No username to search</div>}
-      {queriedUserData.isLoading && <div>Loading Previous Katas...</div>}
-      {queriedUserData.isError && <div>Error fetching username data</div>}
-      {queriedUserData.isSuccess &&
+      {queriedKataData.isIdle && <div>No username to search for katas</div>}
+      {queriedKataData.isLoading && <div>Loading Previous Katas...</div>}
+      {queriedKataData.isError && <div>Error fetching kata data</div>}
+      {queriedKataData.isSuccess &&
         <KatasList
           displayCount={displayCount}
-          kataData={kataData}
-          userData={queriedUserData}
+          kataData={queriedKataData.data}
+          userData={queriedUserData.data}
           filterOptions={filterOptions}
         />}
       {/* {userData?.username && Array.isArray(kataData[userData.username]) ? (

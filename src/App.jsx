@@ -3,14 +3,17 @@ import { useState, useEffect } from "react";
 import {
   getUserData,
   getAllCompletedKataByUser,
+  getKataList,
 } from "./services/service.data";
 import UserInputForm from "./components/UserInputForm";
 import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";
 import ListFilterForm from "./components/ListFilterForm";
 import { useCallback } from "react";
+import { useQuery } from "react-query";
 
 function App() {
+  const [userSearchName, setUserSearchName] = useState("");
   const [userData, setUserData] = useState(null);
   //kataData should be an object with each looked-up username as a property with the fetched data as the value
   const [kataData, setKataData] = useState({});
@@ -23,16 +26,25 @@ function App() {
   });
   const [feedback, setFeedback] = useState("Feedback");
 
-  //I think this should be useCallback();
-  async function handleInputUserSubmit(event, text) {
-    event.preventDefault();
-    const user = await getUserData(text);
+  //React Query
+  const queriedUserData = useQuery(["userDataFetch", userSearchName], 
+    ()=> getUserData(userSearchName), {enabled: !!userSearchName });
+  const queriedKataData = useQuery(["kataDataFetch", userSearchName, queriedUserData.codeChallenges.totalCompleted], 
+    ()=> updateKataData(queriedUserData.username, queriedUserData.codeChallenges.totalCompleted), {enabled: !!queriedUserData.username})
 
-    if (user?.username) {
-      setUserData(() => user);
-    } else {
-      setFeedback("Couldn't retrieve user");
-    }
+  //I think this should be useCallback();
+  async function handleInputUserSubmit(event, userName) {
+    event.preventDefault();
+    //Setting the userSearchName will allow the first react-query to start fetching
+    setUserSearchName(userName);
+
+    //const user = await getUserData(text);
+
+    // if (user?.username) {
+    //   setUserData(() => user);
+    // } else {
+    //   setFeedback("Couldn't retrieve user");
+    // }
   }
 
   function handleFilterOptionsSubmit(options) {
@@ -41,7 +53,7 @@ function App() {
     setFilterOptions((prevOptions) => {
       return {
         ...prevOptions,
-        "kyuLevelChecked":options.kyuLevelChecked
+        "kyuLevelChecked": options.kyuLevelChecked
       }
     });
   }
@@ -67,7 +79,7 @@ function App() {
     }
   }
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (userData?.username) {
       //Check for cached data first. If there's no cached data, then fetch the data
       if (!kataData || !Object.keys(kataData).includes(userData.username)) {
@@ -77,7 +89,7 @@ function App() {
         );
       }
     }
-  }, [userData]);
+  }, [userData]); */
 
   return (
     <div className="flex f-column f-align-center">
@@ -92,16 +104,26 @@ function App() {
       <UserDataDashboard user={userData} />
       <ListFilterForm submitChanges={handleFilterOptionsSubmit} />
       {/* Completed Katas List */}
-      {userData?.username && Array.isArray(kataData[userData.username]) ? (
+      {queriedUserData.isIdle && <div>No username to search</div>}
+      {queriedUserData.isLoading && <div>Loading Previous Katas...</div>}
+      {queriedUserData.isError && <div>Error fetching username data</div>}
+      {queriedUserData.isSuccess &&
         <KatasList
           displayCount={displayCount}
           kataData={kataData}
-          userData={userData}
+          userData={queriedUserData}
+          filterOptions={filterOptions}
+        />}
+      {/* {userData?.username && Array.isArray(kataData[userData.username]) ? (
+        <KatasList
+          displayCount={displayCount}
+          kataData={kataData}
+          userData={queriedUserData}
           filterOptions={filterOptions}
         />
       ) : (
         <div>Loading Previous Katas...</div>
-      )}
+      )} */}
     </div>
   );
 }

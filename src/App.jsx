@@ -10,6 +10,7 @@ import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";
 import ListFilterForm from "./components/ListFilterForm";
 import { useQuery } from "react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const [userSearchName, setUserSearchName] = useState("");
@@ -21,17 +22,30 @@ function App() {
   const [filterOptions, setFilterOptions] = useState({
     ascending: true,
     displayCount: 20,
-    kyuLevelChecked: [null, null, null, null, null, null, null, true]
+    kyuLevelChecked: [null, null, null, null, null, null, null, true],
   });
   const [feedback, setFeedback] = useState("Feedback");
 
   //React Query
-  const queriedUserData = useQuery(["userDataFetch", userSearchName],
-    () => getUserData(userSearchName), { enabled: !!userSearchName });
+  const queriedUserData = useQuery(
+    ["userDataFetch", userSearchName],
+    () => getUserData(userSearchName),
+    { enabled: !!userSearchName,
+      refetchOnWindowFocus:false
+    }
+  );
 
-  console.log(!!queriedUserData?.data?.username);
-  const queriedKataData = useQuery(["kataDataFetch", userSearchName],
-    () => updateKataData(queriedUserData.data.username, queriedUserData.data.codeChallenges.totalCompleted), { enabled: !!queriedUserData?.data?.username })
+  const queriedKataData = useQuery(
+    ["kataDataFetch", userSearchName],
+    () =>
+      updateKataData(
+        queriedUserData.data.username,
+        queriedUserData.data.codeChallenges.totalCompleted
+      ),
+    { enabled: !!queriedUserData?.data?.username, 
+      refetchOnWindowFocus:false,
+    }
+  );
 
   //I think this should be useCallback();
   async function handleInputUserSubmit(event, userName) {
@@ -54,8 +68,8 @@ function App() {
     setFilterOptions((prevOptions) => {
       return {
         ...prevOptions,
-        "kyuLevelChecked": options.kyuLevelChecked
-      }
+        kyuLevelChecked: options.kyuLevelChecked,
+      };
     });
   }
 
@@ -69,8 +83,8 @@ function App() {
     let data = await getAllCompletedKataByUser(username, totalCompleted);
     //let data = await getKataTest(user);
     return data;
-    console.log("All Completed MEMOIZED Kata Data", data);
-    /* if (data) {
+    /*console.log("All Completed MEMOIZED Kata Data", data);
+     if (data) {
       setKataData((prevKataData) => {
         //Update the object with the new property
         const newObj = { ...prevKataData };
@@ -93,6 +107,8 @@ function App() {
     }
   }, [userData]); */
 
+  console.log(queriedKataData.status);
+
   return (
     <div className="flex f-column f-align-center">
       <h1>Code Wars Lookup</h1>
@@ -103,19 +119,22 @@ function App() {
         feedback={feedback}
       />
       {/* User's "dashboard" data */}
-      {queriedUserData.isSuccess && <UserDataDashboard user={queriedUserData.data} />}
+      {queriedUserData.isSuccess && (
+        <UserDataDashboard user={queriedUserData.data} />
+      )}
       <ListFilterForm submitChanges={handleFilterOptionsSubmit} />
       {/* Completed Katas List */}
       {queriedKataData.isIdle && <div>No username to search for katas</div>}
       {queriedKataData.isLoading && <div>Loading Previous Katas...</div>}
       {queriedKataData.isError && <div>Error fetching kata data</div>}
-      {queriedKataData.isSuccess &&
+      {queriedKataData.isSuccess && (
         <KatasList
           displayCount={displayCount}
           kataData={queriedKataData.data}
           userData={queriedUserData.data}
           filterOptions={filterOptions}
-        />}
+        />
+      )}
       {/* {userData?.username && Array.isArray(kataData[userData.username]) ? (
         <KatasList
           displayCount={displayCount}

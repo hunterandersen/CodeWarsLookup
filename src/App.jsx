@@ -83,7 +83,7 @@ function App() {
     return data;
   }
 
-  console.log(queriedKataData.status);
+  console.log(queriedUserData.status);
 
   return (
     <div className="flex f-column f-align-center">
@@ -95,7 +95,8 @@ function App() {
         feedback={feedback}
       />
       {/* User's "dashboard" data */}
-      {queriedUserData.isSuccess && (
+      {queriedUserData.isSuccess && !queriedUserData.data.success && <div style={{color: "red"}}>{queriedUserData.data.reason}</div>}
+      {(queriedUserData.isSuccess && queriedUserData.data.success) && (
         <UserDataDashboard user={queriedUserData.data} />
       )}
       <ListFilterForm submitChanges={handleFilterOptionsSubmit} />

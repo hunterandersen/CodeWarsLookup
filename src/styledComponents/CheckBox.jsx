@@ -3,7 +3,7 @@ import "./CheckBox.css";
 
 export default function CheckBox({name, id, checked, onChange, content}) {
   return (
-    <div className="CheckBox" onClick={onChange}>
+    <div className={"CheckBox " + (checked? "CheckBoxSelected" : "")} onClick={onChange}>
       <input
         type="checkbox"
         name={name}
@@ -11,7 +11,7 @@ export default function CheckBox({name, id, checked, onChange, content}) {
       />
       <label
         htmlFor={name}
-        className={checked? "CheckboxSelected" : ""}
+        /* className={checked? "CheckBoxSelected" : ""} */
       >
         {content}
       </label>

@@ -10,7 +10,6 @@ import UserDataDashboard from "./components/UserDataDashboard";
 import KatasList from "./components/KatasList";
 import ListFilterForm from "./components/ListFilterForm";
 import { useQuery } from "react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const [userSearchName, setUserSearchName] = useState("");
@@ -81,31 +80,8 @@ function App() {
 
   async function updateKataData(username, totalCompleted) {
     let data = await getAllCompletedKataByUser(username, totalCompleted);
-    //let data = await getKataTest(user);
     return data;
-    /*console.log("All Completed MEMOIZED Kata Data", data);
-     if (data) {
-      setKataData((prevKataData) => {
-        //Update the object with the new property
-        const newObj = { ...prevKataData };
-        newObj[username] = data;
-        console.log("Updating kataData state: ", newObj);
-        return newObj;
-      });
-    } */
   }
-
-  /* useEffect(() => {
-    if (userData?.username) {
-      //Check for cached data first. If there's no cached data, then fetch the data
-      if (!kataData || !Object.keys(kataData).includes(userData.username)) {
-        updateKataData(
-          userData.username,
-          userData.codeChallenges.totalCompleted
-        );
-      }
-    }
-  }, [userData]); */
 
   console.log(queriedKataData.status);
 
@@ -135,16 +111,6 @@ function App() {
           filterOptions={filterOptions}
         />
       )}
-      {/* {userData?.username && Array.isArray(kataData[userData.username]) ? (
-        <KatasList
-          displayCount={displayCount}
-          kataData={kataData}
-          userData={queriedUserData}
-          filterOptions={filterOptions}
-        />
-      ) : (
-        <div>Loading Previous Katas...</div>
-      )} */}
     </div>
   );
 }

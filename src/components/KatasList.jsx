@@ -21,7 +21,6 @@ export default function KatasList({ kataData, userData, filterOptions, displayCo
     }); //the filter is to get rid of the null values after mapping
 
     let displayData = kataData.slice(0);
-    console.log(displayData);
     if (kyuLevelsArr.length > 0){
       //Filter the data based on kyu level
       displayData = displayData.filter((kata) => {
@@ -36,7 +35,6 @@ export default function KatasList({ kataData, userData, filterOptions, displayCo
       }
       return b.rank.id - a.rank.id;
     });
-    console.log(displayData);
 
     return displayData;
   };
@@ -60,7 +58,6 @@ export default function KatasList({ kataData, userData, filterOptions, displayCo
   }
 
   const kataInfo = generateDisplayData(kataData, userData, filterOptions);
-  console.log(kataInfo);
 
   return (
     <div className="container">

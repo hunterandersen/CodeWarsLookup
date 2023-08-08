@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import "./ListFilterForm.css";
+import CheckBox from "../styledComponents/CheckBox";
 
 export default function ListFilterForm({ submitChanges }) {
   //The controlled state for all the filtering options
@@ -28,22 +30,19 @@ export default function ListFilterForm({ submitChanges }) {
         }}
       >
         <fieldset id="kyuCheckBoxesFieldset">
+          <legend>View Kyu Level</legend>
           {kyuLevels.map((level) => {
-            return (
-              <div key={`filterKyuCheck-${level}`} className="checkContainer">
-                <input
-                  type="checkbox"
-                  name={`filterKyuCheck${level}`}
-                  id={`filterKyuCheck${level}`}
-                  onChange={updateCheckBox}
-                />
-                <label htmlFor={`filterKyuCheck${level}`}>{level} Kyu</label>
-              </div>
-            );
+            return <CheckBox
+              key={`filterKyuCheck-${level}`}
+              name={`filterKyuCheck${level}`}
+              id={`filterKyuCheck${level}`}
+              onChange={updateCheckBox}
+              content={level}
+            />
           })}
-          {JSON.stringify(kyuLevelChecked)}
+          {/* {JSON.stringify(kyuLevelChecked)} */}
+          <button type="submit" className="button">Apply Filters</button>
         </fieldset>
-        <button type="submit" className="button">Apply Filters</button>
       </form>
     </div>
   );

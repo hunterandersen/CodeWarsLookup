@@ -1,0 +1,9 @@
+#kyuCheckBoxesFieldset{
+    display: flex;
+    gap: .5rem;
+}
+
+#kyuCheckBoxesFieldset > legend {
+    font-size: 1.2rem;
+    color:orange;
+}

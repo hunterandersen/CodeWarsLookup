@@ -2,9 +2,7 @@ import React from "react";
 
 export default function UserDataDashboard({ user }) {
 
-  if (user){
-    console.log(user);
-  }
+  console.log(user);
 
   if (user) {
     return (
